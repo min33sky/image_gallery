@@ -3,6 +3,7 @@ import ImageSearch from '@components/ImageSearch';
 import axios from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
+import { FaSpinner } from 'react-icons/fa';
 
 interface ImageData {
   total: number;
@@ -29,7 +30,9 @@ export default function HomePage() {
   if (mutation.status === 'loading') {
     return (
       <div className="flex justify-center items-center h-full">
-        <h1 className="text-6xl">Loading.......</h1>
+        <h1 className="animate-spin text-6xl">
+          <FaSpinner />
+        </h1>
       </div>
     );
   }
