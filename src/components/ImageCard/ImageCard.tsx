@@ -9,7 +9,11 @@ function ImageCard({ image }: ImageCardProps) {
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg">
-      <img className="w-full" src={image.webformatURL} alt="random_image" />
+      <img
+        className="w-full h-64 object-cover object-center cursor-pointer"
+        src={image.webformatURL}
+        alt="random_image"
+      />
       <div className="px-6 py-4">
         <div className="font-bold text-purple-500 text-xl mb-2">Photo by {image.user}</div>
         <ul>
@@ -31,7 +35,7 @@ function ImageCard({ image }: ImageCardProps) {
         {tags.map((tag: string) => (
           <span
             key={tag + image.id}
-            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
+            className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 cursor-pointer"
           >
             #{tag}
           </span>
