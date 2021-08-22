@@ -11,9 +11,11 @@ interface ImageData {
   hits: any[];
 }
 
-export async function getImages(term: string) {
+export async function getImages(term: string, page: number) {
   const { data } = await axios.get<ImageData>(
-    `https://pixabay.com/api/?key=${process.env.API_KEY}&q=${term}&image_type=photo`
+    `https://pixabay.com/api/?key=${process.env.API_KEY}&q=${term}&image_type=photo&page=${
+      page || 1
+    }`
   );
 
   return data;
@@ -24,19 +26,40 @@ export async function getImages(term: string) {
  * @returns
  */
 export default function HomePage() {
+  const [enabled, setEnabled] = useState(false);
   const [term, setTerm] = useState(''); // 검색어
+  const [page, setPage] = useState(1);
+  const [imageData, setImageData] = useState<any[]>([]);
+
   const { isLoading, data, error, isError, isSuccess } = useQuery<ImageData, AxiosError>(
-    ['getImages', term],
-    () => getImages(term)
+    ['getImages', term, page],
+    () => getImages(term, page),
+    {
+      onSuccess: (value: ImageData) => {
+        setEnabled(false);
+        setImageData(value.hits);
+      },
+      enabled,
+    }
   );
 
-  // const mutation = useMutation(getImages);
+  const mutation = useMutation<ImageData, AxiosError>(() => getImages(term, page + 1), {
+    onSuccess: (value: ImageData) => {
+      setImageData((prev) => [...prev, ...value.hits]);
+    },
+  });
 
   const handleTerm = useCallback((text: string) => {
     setTerm(text);
+    setEnabled(true);
   }, []);
 
-  if (isLoading) {
+  const getMoreImage = useCallback(() => {
+    setPage((prev) => prev + 1);
+    mutation.mutate();
+  }, [mutation]);
+
+  if (isLoading && !imageData) {
     return (
       <div className="flex items-center justify-center h-full">
         <h1 className="text-6xl animate-spin">
@@ -79,10 +102,14 @@ export default function HomePage() {
     <div className="container px-6 sm:mx-auto sm:px-2 ">
       <ImageSearch handleTerm={handleTerm} />
       <div className="grid gap-4 mx-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {data?.hits.map((image) => (
-          <ImageCard key={image.id} image={image} />
+        {imageData.map((image) => (
+          <ImageCard key={image?.id} image={image} />
         ))}
       </div>
+
+      <button type="button" onClick={getMoreImage} className="text-lg bg-purple-400">
+        더 보기
+      </button>
     </div>
   );
 }
