@@ -1,6 +1,6 @@
 import ImageCard from '@components/ImageCard/ImageCard';
 import ImageSearch from '@components/ImageSearch';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React, { useCallback, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { FaSpinner } from 'react-icons/fa';
@@ -24,19 +24,19 @@ export async function getImages(term: string) {
  * @returns
  */
 export default function HomePage() {
-  /**
-   * TODO: useMutation을 다시 useQuery로 전환한다
-   */
-
-  // const [enabled, setEnabled] = useState(false); //? useQuery의 fetch 여부 관리
   const [term, setTerm] = useState(''); // 검색어
-  const mutation = useMutation(getImages);
+  const { isLoading, data, error, isError, isSuccess } = useQuery<ImageData, AxiosError>(
+    ['getImages', term],
+    () => getImages(term)
+  );
 
-  const handleSubmit = useCallback(() => {
-    mutation.mutate(term);
-  }, [mutation, term]);
+  // const mutation = useMutation(getImages);
 
-  if (mutation.status === 'loading') {
+  const handleTerm = useCallback((text: string) => {
+    setTerm(text);
+  }, []);
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <h1 className="text-6xl animate-spin">
@@ -46,7 +46,16 @@ export default function HomePage() {
     );
   }
 
-  if (mutation.status === 'success' && mutation.data?.hits.length === 0) {
+  if (isError) {
+    console.log('에러: ', error);
+    return (
+      <div className="flex items-center justify-center h-full">
+        <h1 className="text-6xl animate-spin">에러...{error?.message}</h1>
+      </div>
+    );
+  }
+
+  if (isSuccess && data?.hits.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-3xl md:text-5xl">해당하는 이미지가 없습니다... 😂</h1>
@@ -68,9 +77,9 @@ export default function HomePage() {
 
   return (
     <div className="container px-6 sm:mx-auto sm:px-2 ">
-      <ImageSearch text={term} handleChange={setTerm} handleSubmit={handleSubmit} />
+      <ImageSearch handleTerm={handleTerm} />
       <div className="grid gap-4 mx-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {mutation.data?.hits.map((image) => (
+        {data?.hits.map((image) => (
           <ImageCard key={image.id} image={image} />
         ))}
       </div>

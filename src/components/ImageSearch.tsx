@@ -1,19 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { SearchIcon } from '@heroicons/react/outline';
 
 interface ImageSearchProps {
-  text: string;
-  handleChange: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: () => void;
+  handleTerm: (term: string) => void;
 }
 
-function ImageSearch({ text, handleChange, handleSubmit }: ImageSearchProps) {
+function ImageSearch({ handleTerm }: ImageSearchProps) {
+  const [text, setText] = useState('');
+
   const onSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      handleSubmit();
+      // props로 받은 함수에 text 전달
+      handleTerm(text);
     },
-    [handleSubmit]
+    [handleTerm, text]
   );
 
   return (
@@ -24,7 +25,7 @@ function ImageSearch({ text, handleChange, handleSubmit }: ImageSearchProps) {
             className="w-full px-2 mr-1 text-3xl leading-tight text-gray-600 bg-transparent border-none appearance-none focus:outline-none"
             type="text"
             value={text}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e) => setText(e.target.value)}
             placeholder="Search Your Image"
           />
           <button
