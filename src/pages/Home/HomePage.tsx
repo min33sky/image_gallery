@@ -19,7 +19,16 @@ export async function getImages(term: string) {
   return data;
 }
 
+/**
+ * 시작 페이지
+ * @returns
+ */
 export default function HomePage() {
+  /**
+   * TODO: useMutation을 다시 useQuery로 전환한다
+   */
+
+  // const [enabled, setEnabled] = useState(false); //? useQuery의 fetch 여부 관리
   const [term, setTerm] = useState(''); // 검색어
   const mutation = useMutation(getImages);
 
@@ -29,8 +38,8 @@ export default function HomePage() {
 
   if (mutation.status === 'loading') {
     return (
-      <div className="flex justify-center items-center h-full">
-        <h1 className="animate-spin text-6xl">
+      <div className="flex items-center justify-center h-full">
+        <h1 className="text-6xl animate-spin">
           <FaSpinner />
         </h1>
       </div>
@@ -39,11 +48,11 @@ export default function HomePage() {
 
   if (mutation.status === 'success' && mutation.data?.hits.length === 0) {
     return (
-      <div className="flex flex-col justify-center items-center h-full">
+      <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-3xl md:text-5xl">해당하는 이미지가 없습니다... 😂</h1>
         <div>
           <button
-            className="mt-5 px-3 py-2 text-2xl bg-purple-500 hover:bg-purple-400  hover:-translate-y-1 transform transition focus:ring-purple-300 focus:ring-opacity-50 focus:outline-none focus:ring focus:ring-offset-2 active:bg-purple-700 text-white font-semibold "
+            className="px-3 py-2 mt-5 text-2xl font-semibold text-white transition transform bg-purple-500 hover:bg-purple-400 hover:-translate-y-1 focus:ring-purple-300 focus:ring-opacity-50 focus:outline-none focus:ring focus:ring-offset-2 active:bg-purple-700 "
             type="button"
             onClick={() => {
               // eslint-disable-next-line no-restricted-globals
@@ -58,9 +67,9 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container mx-auto">
+    <div className="container px-6 sm:mx-auto sm:px-2 ">
       <ImageSearch text={term} handleChange={setTerm} handleSubmit={handleSubmit} />
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid gap-4 mx-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {mutation.data?.hits.map((image) => (
           <ImageCard key={image.id} image={image} />
         ))}

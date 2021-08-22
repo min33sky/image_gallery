@@ -10,6 +10,7 @@
   "author": "min33sky",
   "license": "MIT",
   "dependencies": {
+    "@heroicons/react": "^1.0.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",

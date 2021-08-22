@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
+import { SearchIcon } from '@heroicons/react/outline';
 
 interface ImageSearchProps {
   text: string;
@@ -16,21 +17,21 @@ function ImageSearch({ text, handleChange, handleSubmit }: ImageSearchProps) {
   );
 
   return (
-    <div className="max-w-sm rounded overflow-hidden my-10 mx-auto">
+    <div className="max-w-sm mx-auto my-10 overflow-hidden rounded">
       <form onSubmit={onSubmit} className="w-full max-w-sm">
-        <div className="flex items-center border-b-2 border-purple-700 py-1 ">
+        <div className="flex items-center pb-[1px] border-b-2 border-purple-300 ">
           <input
-            className="appearance-none bg-transparent border-none w-full text-gray-600 text-2xl mr-1 px-2 leading-tight focus:outline-none"
+            className="w-full px-2 mr-1 text-3xl leading-tight text-gray-600 bg-transparent border-none appearance-none focus:outline-none"
             type="text"
             value={text}
             onChange={(e) => handleChange(e.target.value)}
-            placeholder="검색할 이미지를 입력하세요."
+            placeholder="Search Your Image"
           />
           <button
-            className="flex-shrink-0 bg-purple-500 hover:bg-purple-400 transform transition focus:ring-purple-400 focus:ring-opacity-50 focus:outline-none focus:ring focus:ring-offset-0 active:bg-purple-600 text-sm border-4 text-white py-2 px-3 rounded-lg tracking-widest"
+            className="flex-shrink-0 px-2 py-2 text-white transition transform bg-purple-500 border-4 rounded-lg hover:bg-purple-400 focus:ring-purple-400 focus:ring-opacity-50 focus:outline-none focus:ring focus:ring-offset-0 active:bg-purple-600"
             type="submit"
           >
-            검색
+            <SearchIcon className="h-5" />
           </button>
         </div>
       </form>
