@@ -36,18 +36,13 @@ export default function HomePage() {
     () => getImages(term, page),
     {
       onSuccess: (value: ImageData) => {
+        console.log('유즈쿼리~~~: ', value);
+        setImageData((prev) => [...prev, ...value.hits]);
         setEnabled(false);
-        setImageData(value.hits);
       },
       enabled,
     }
   );
-
-  const mutation = useMutation<ImageData, AxiosError>(() => getImages(term, page + 1), {
-    onSuccess: (value: ImageData) => {
-      setImageData((prev) => [...prev, ...value.hits]);
-    },
-  });
 
   const handleTerm = useCallback((text: string) => {
     setTerm(text);
@@ -56,8 +51,8 @@ export default function HomePage() {
 
   const getMoreImage = useCallback(() => {
     setPage((prev) => prev + 1);
-    mutation.mutate();
-  }, [mutation]);
+    setEnabled(true);
+  }, []);
 
   if (isLoading && !imageData) {
     return (
@@ -78,7 +73,7 @@ export default function HomePage() {
     );
   }
 
-  if (isSuccess && data?.hits.length === 0) {
+  if (isSuccess && imageData.length === 0 && data?.hits.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-3xl md:text-5xl">해당하는 이미지가 없습니다... 😂</h1>
