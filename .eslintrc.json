@@ -46,7 +46,8 @@
     "consistent-return": "off",
     "no-plusplus": "off",
     // "import/no-unresolved": "off"
-    "import/no-extraneous-dependencies": "off" //? devDependencies에 설치하지 말라는 경고
+    "import/no-extraneous-dependencies": "off", //? devDependencies에 설치하지 말라는 경고
+    "react/prop-types": "off"
   },
   "settings": {
     "import/parsers": {

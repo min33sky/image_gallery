@@ -1,8 +1,8 @@
 import ImageCard from '@components/ImageCard/ImageCard';
 import ImageSearch from '@components/ImageSearch';
 import axios, { AxiosError } from 'axios';
-import React, { useCallback, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import React, { useCallback, useState, MutableRefObject, useRef } from 'react';
+import { useQuery } from 'react-query';
 import { FaSpinner } from 'react-icons/fa';
 
 interface ImageData {
@@ -26,9 +26,11 @@ export async function getImages(term: string, page: number) {
  * @returns
  */
 export default function HomePage() {
+  const inputRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
   const [enabled, setEnabled] = useState(false);
   const [term, setTerm] = useState(''); // 검색어
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1); // 페이지
+  const [moreButtonFlag, setMoreButtonFlag] = useState(false);
   const [imageData, setImageData] = useState<any[]>([]);
 
   const { isLoading, data, error, isError, isSuccess } = useQuery<ImageData, AxiosError>(
@@ -36,17 +38,23 @@ export default function HomePage() {
     () => getImages(term, page),
     {
       onSuccess: (value: ImageData) => {
-        console.log('유즈쿼리~~~: ', value);
         setImageData((prev) => [...prev, ...value.hits]);
         setEnabled(false);
+        setMoreButtonFlag(true);
+        if (value.hits.length < 20) {
+          // 더보기 버튼 안보이게
+          setMoreButtonFlag(false);
+        }
       },
       enabled,
     }
   );
 
-  const handleTerm = useCallback((text: string) => {
-    setTerm(text);
-    setEnabled(true);
+  const handleSubmit = useCallback(() => {
+    if (inputRef.current) {
+      setTerm(inputRef.current.value);
+      setEnabled(true);
+    }
   }, []);
 
   const getMoreImage = useCallback(() => {
@@ -95,16 +103,18 @@ export default function HomePage() {
 
   return (
     <div className="container px-6 sm:mx-auto sm:px-2 ">
-      <ImageSearch handleTerm={handleTerm} />
+      <ImageSearch ref={inputRef} handleSubmit={handleSubmit} />
       <div className="grid gap-4 mx-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {imageData.map((image) => (
           <ImageCard key={image?.id} image={image} />
         ))}
       </div>
 
-      <button type="button" onClick={getMoreImage} className="text-lg bg-purple-400">
-        더 보기
-      </button>
+      {moreButtonFlag && (
+        <button type="button" onClick={getMoreImage} className="text-lg bg-purple-400">
+          더 보기
+        </button>
+      )}
     </div>
   );
 }
